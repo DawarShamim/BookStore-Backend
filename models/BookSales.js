@@ -1,27 +1,27 @@
 const mongoose = require('mongoose');
 
 const booksaleSchema = new mongoose.Schema({
-Date: {
+  Date: {
     type: Date,
     required: true,
-  }, 
-Books: [
+  },
+  Books: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Book'
     }],
-Store:{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Store'
-    },
-Employee:{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Employee'
-    },
-TotalAmount:{
+  Store: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Store'
+  },
+  Employee: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Employee'
+  },
+  TotalAmount: {
     type: Number,
     required: true
-    },
+  },
   createdAt: {
     type: Date,
     default: Date.now

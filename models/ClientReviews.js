@@ -1,17 +1,17 @@
 const mongoose = require('mongoose');
 
 const clientreviewSchema = new mongoose.Schema({
-    Book:{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Book'
-      },
-    Client:{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Client'
-      },
+  Book: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Book'
+  },
+  Client: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Client'
+  },
   ReviewText: {
     type: String,
-    MaxLength:1000,
+    MaxLength: 1000,
   },
   Stars: {
     type: Number,

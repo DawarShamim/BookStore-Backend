@@ -5,7 +5,7 @@ const bookSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true
-  }, 
+  },
   Isbn_code: {
     type: String,
     required: true,
@@ -30,16 +30,16 @@ const bookSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
-  Author:{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Author'
-    },
-  Store:[
+  Author: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Author'
+  },
+  Store: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Store'
     }],
-  Review:[
+  Review: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Review'

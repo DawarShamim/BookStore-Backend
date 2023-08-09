@@ -4,11 +4,11 @@ const employeeSchema = new mongoose.Schema({
   FirstName: {
     type: String,
     required: true,
-  }, 
+  },
   LastName: {
     type: String,
     required: true,
-  }, 
+  },
   BirthDate: {
     type: Date,
     required: true
@@ -35,9 +35,9 @@ const employeeSchema = new mongoose.Schema({
     required: true,
     unique: true
   },
-  Store:{ 
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Store'
+  Store: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Store'
   },
   createdAt: {
     type: Date,

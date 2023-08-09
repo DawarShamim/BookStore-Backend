@@ -4,7 +4,7 @@ const clientSchema = new mongoose.Schema({
   Name: {
     type: String,
     required: true,
-  }, 
+  },
   Address: {
     type: String,
     required: true,
@@ -25,7 +25,7 @@ const clientSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
-  
+
 });
 
 const Client = mongoose.model('Client', clientSchema);

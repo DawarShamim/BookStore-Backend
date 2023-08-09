@@ -1,5 +1,5 @@
 
-Employees  
+Employees
 
 const mongoose = require('mongoose');
 
@@ -8,7 +8,7 @@ const storeSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true
-  }, 
+  },
   Address: {
     type: String,
     required: true,
@@ -21,7 +21,7 @@ const storeSchema = new mongoose.Schema({
     type: String,
     required: true
   }],
-  Employees:[
+  Employees: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Employee'
@@ -34,7 +34,7 @@ const storeSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
-  
+
 });
 
 const Store = mongoose.model('Store', userSchema);
