@@ -4,7 +4,6 @@ const booksaleSchema = new mongoose.Schema({
 Date: {
     type: Date,
     required: true,
-    unique: true
   }, 
 Books: [
     {
@@ -19,12 +18,8 @@ Employee:{
     type: mongoose.Schema.Types.ObjectId,
         ref: 'Employee'
     },
-Employee:{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Employee'
-    },
 TotalAmount:{
-    type: Integar,
+    type: Number,
     required: true
     },
   createdAt: {

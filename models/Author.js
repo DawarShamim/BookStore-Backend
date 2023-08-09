@@ -9,13 +9,13 @@ const authorSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  Books: {
-    type: String,
-    required: true
-  },
+  Books:[
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Book'
+    }],
   Website: {
     type: String,
-    required: true
   },
   createdAt: {
     type: Date,

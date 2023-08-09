@@ -14,7 +14,7 @@ const clientreviewSchema = new mongoose.Schema({
     MaxLength:1000,
   },
   Stars: {
-    type: Integar,
+    type: Number,
     required: true
   },
   createdAt: {
