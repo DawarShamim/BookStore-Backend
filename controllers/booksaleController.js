@@ -1,6 +1,6 @@
 const BookSale = require("../models/BookSales");
- const Book = require("../models/Book");
- const Employee = require("../models/Employee");
+const Book = require("../models/Book");
+const Employee = require("../models/Employee");
 
 exports.createNew = async(req,res)=>{
     try{

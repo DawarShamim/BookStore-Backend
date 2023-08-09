@@ -16,7 +16,7 @@ exports.createNew = async(req,res)=>{
 
         res.status(200).json({ message: 'Client Review created', ClientReview: newClientReview });
         
-    }catch{
+    }catch(error){
         next(error);
     }
 };
@@ -30,7 +30,7 @@ exports.getSpecificBookReviews = async(req,res)=>{
         }else{
         res.status(200).json({Review: BookReview });
     }
-    }catch{
+    }catch(error){
         next(error);
     }
 };

@@ -15,7 +15,7 @@ Store:{
         ref: 'Store'
     },
 Employee:{
-    type: mongoose.Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'Employee'
     },
 TotalAmount:{
