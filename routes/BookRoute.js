@@ -1,12 +1,11 @@
 const express = require('express');
 const router = express.Router();
-
 const BookController = require('../controllers/bookController');
-
 
  
 router.get('/',BookController.getAll);
-router.post('/',BookController.createNew); 
+router.post("/",BookController.createNewBookWithAuthor);
+router.post('/book',BookController.createNew); 
 
 router.get('/:id',BookController.getSpecificBook);
 router.put('/:id',BookController.updateSpecificBook);

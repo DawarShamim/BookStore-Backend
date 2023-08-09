@@ -1,6 +1,3 @@
-
-Employees
-
 const mongoose = require('mongoose');
 
 const storeSchema = new mongoose.Schema({
@@ -34,7 +31,7 @@ const storeSchema = new mongoose.Schema({
       },
       numberOfCopies: {
         type: Number,
-        default: 1 // Default number of copies if not provided
+        default: 1 
       }
     }
   ],
@@ -49,6 +46,6 @@ const storeSchema = new mongoose.Schema({
 
 });
 
-const Store = mongoose.model('Store', userSchema);
+const Store = mongoose.model('Store', storeSchema);
 
 module.exports = Store;

@@ -2,12 +2,13 @@ const Store = require("../models/Store");
 const Employee = require("../models/Employee");
 const BookSale = require("../models/BookSales");
 
-exports.createNew = async (req, res) => {
+//Admin
+exports.createNew = async (req, res, next) => {
     try {
         const name = req.body?.Name;
         const address = req.body?.Address;
         const state = req.body?.State;
-        const phoneNumbers = req.body?.Phonenumber;
+        const phoneNumbers = req.body?.PhoneNumbers;
 
         const newStore = new Store({
             Name: name,
@@ -17,17 +18,20 @@ exports.createNew = async (req, res) => {
         });
         await newStore.save();
 
-    } catch (error) { next(error); }
+        res.status(200).json({ message: 'Store created', store: newStore });
+    } catch (error) {
+        next(error);
+    }
 };
-
+//Admin
 exports.updateStore = async (req, res, next) => {
     try {
-        const StoreID = req.params.id;
+        const storeID = req.params.id;
 
         const name = req.body?.Name;
         const address = req.body?.Address;
         const state = req.body?.State;
-        const phoneNumbers = req.body?.Phonenumber;
+        const phoneNumbers = req.body?.PhoneNumbers;
 
         const updateData = {
             Name: name,
@@ -36,11 +40,11 @@ exports.updateStore = async (req, res, next) => {
             PhoneNumbers: phoneNumbers
         };
 
-        // Find the book by ID and update the information
+        // Find the store by ID and update the information
         const updatedStore = await Store.findByIdAndUpdate(
-            StoreID,
+            storeID,
             updateData,
-            { new: true, runValidators: true } // Return the updated book and run validation
+            { new: true, runValidators: true }
         );
 
         if (!updatedStore) {
@@ -52,90 +56,107 @@ exports.updateStore = async (req, res, next) => {
         next(error);
     }
 };
-
+//Admin
 exports.getAll = async (req, res, next) => {
     try {
-        const StoreInfo = await Store.find();
-        if (!StoreInfo) {
-            return res.status(404).json({ message: 'Stores not found' });
-        }
-        res.status(200).json(StoreInfo);
+        const allStores = await Store.find();
+        res.status(200).json(allStores);
 
     } catch (error) {
         next(error);
     }
 };
-
-exports.getSpecificStore = async (req, res) => {
+//Store
+exports.addBooks = async (req, res, next) => {
     try {
-        const StoreID = req.params.id;
+        const storeId = req.params.storeId; // Assuming you're passing the store ID in the URL parameter
+        // Retrieve the store by ID
+        const store = await Store.findById(storeId);
 
-        // Find the book by ID 
-        const StoreInfo = await Store.find(StoreID);
-
-        if (!StoreInfo) {
-            return res.status(404).json({ message: 'Stores not found' });
+        if (!store) {
+            return res.status(404).json({ message: 'Store not found' });
         }
-        res.status(200).json(StoreInfo);
+        const BookID = req.body?.bookID;
+        const numberOfCopies = req.body?.NumberOfCopies; // Get the number of copies from the request
 
+        // Add the new book to the store's Books array along with the number of copies
+        store.Books.push({
+            book: BookID,
+            numberOfCopies: numberOfCopies,
+        });
+
+        // Save the updated store document
+        await store.save();
+
+        res.status(200).json({ message: 'Book added to inventory', store: store });
     } catch (error) {
         next(error);
     }
 };
 
+//Admin
+exports.getSpecificStore = async (req, res, next) => {
+    try {
+        const storeID = req.params.id;
+
+        // Find the store by ID
+        const storeInfo = await Store.findById(storeID);
+
+        if (!storeInfo) {
+            return res.status(404).json({ message: 'Store not found' });
+        }
+        res.status(200).json(storeInfo);
+
+    } catch (error) {
+        next(error);
+    }
+};
+//Admin, Store
 exports.getAllStoreBooks = async (req, res, next) => {
     try {
-      const storeID = req.params.id;
-  
-      // Find the store by ID
-      const storeInfo = await Store.findById(storeID);
-  
-      if (!storeInfo) {
-        return res.status(404).json({ message: 'Store not found' });
-      }
-  
-      const storeBooks = storeInfo.Books; // Assuming 'Books' is a field in the store document
-  
-      // Find all books with IDs present in the storeBooks array
-      const allBooks = await Books.find({ _id: { $in: storeBooks } });
-  
-      res.status(200).json(allBooks);
-    } catch (error) {
-      next(error);
-    }
-  };
-  
-  
+        const storeID = req.params.id;
 
-exports.getAllStoreEmp = async (req, res, next) => {
-    try {
-        const StoreID = req.params.id;
-        // Find the book by ID 
-        const StoreInfo = await Store.find(StoreID);
-        if (!StoreInfo) {
-            return res.status(404).json({ message: 'Stores not found' });
-        } else {
-            const Employees = await Employee.find({ _id: { $in: StoreInfo.Employees } });
-            res.status(200).json(Employees);
+        // Find the store by ID
+        const storeInfo = await Store.findById(storeID);
+
+        if (!storeInfo) {
+            return res.status(404).json({ message: 'Store not found' });
         }
+
+        const storeBooks = storeInfo.Books;
+        res.status(200).json(storeBooks);
 
     } catch (error) {
         next(error);
     }
 };
+//Admin, Store
+exports.getAllStoreEmp = async (req, res, next) => {
+    try {
+        const storeID = req.params.id;
 
+        // Find the store by ID
+        const storeInfo = await Store.findById(storeID);
+
+        if (!storeInfo) {
+            return res.status(404).json({ message: 'Store not found' });
+        }
+
+        const employees = await Employee.find({ _id: { $in: (storeInfo.Employees) } });
+        res.status(200).json(employees);
+
+    } catch (error) {
+        next(error);
+    }
+};
+//Admin, Store
 exports.getAllSales = async (req, res, next) => {
     try {
-        const StoreID = req.params.id;
-        const Sales = await BookSale.find({ Store: StoreID });
-        if (!Sales) {
-            return res.status(404).json({ message: "No Sales Found" });
-        } else {
-            return res.status(200).json(Sales);
+        const storeID = req.params.id;
 
-        }
+        const sales = await BookSale.find({ Store: storeID });
+        res.status(200).json(sales);
+    } catch (error) {
+        next(error);
     }
-    catch (error) { }
 };
-
-

@@ -5,7 +5,7 @@ const cors = require("cors");
 require("dotenv").config();
 
 const app = express();
-const passport = require("passport");
+// const passport = require("passport");
 
 const { login } = require("./Auth");
 const DBurl = process.env.DBurl;
@@ -14,15 +14,15 @@ const PORT = process.env.PORT || 8080;
 app.use(express.json());
 app.use(cors());
 
-require("./middleware/passport")(passport);
+// require("./middleware/passport")(passport);
 
-app.use("/api/author", require("./routes/AuthorRoutes"));
-app.use("/api/book", require("./routes/BookRoutes"));
-app.use("/api/booksales", require("./routes/BookSalesRoutes"));
-app.use("/api/clients", require("./routes/ClientRoutes"));
-app.use("/api/clientreviews", require("./routes/ClientReviewsRoutes"));
-app.use("/api/employee", require("./routes/EmployeeRoutes"));
-app.use("/api/stores", require("./routes/StoreRoutes"));
+app.use("/api/author", require("./routes/AuthorRoute"));
+app.use("/api/book", require("./routes/BookRoute"));
+app.use("/api/booksales", require("./routes/BookSalesRoute"));
+app.use("/api/clients", require("./routes/ClientRoute"));
+app.use("/api/clientreviews", require("./routes/ClientReviewsRoute"));
+app.use("/api/employee", require("./routes/EmployeeRoute"));
+app.use("/api/stores", require("./routes/StoreRoute"));
 
 // Custom error handling middleware
 app.use((error, req, res, next) => {
@@ -35,6 +35,7 @@ app.use((error, req, res, next) => {
   }
   res.status(statusCode).json({ error: errorMessage });
 });
+
 
 // This will fire whenever an unknown endpoint is hit
 app.all("*", (req, res) => {

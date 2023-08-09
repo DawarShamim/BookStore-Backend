@@ -1,6 +1,7 @@
 const Book = require("../models/Book");
 const AuthorModel = require("../models/Author");
 const ClientReview = require("../models/ClientReviews");
+const mongoose = require('mongoose');
 
 exports.createNew = async (req, res) => {
     try {
@@ -26,6 +27,55 @@ exports.createNew = async (req, res) => {
     }
 };
 
+exports.createNewBookWithAuthor = async (req, res, next) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+        const name = req.body?.Name;
+        const description = req.body?.Description;
+        const website = req.body?.Website;
+
+        const newAuthor = new AuthorModel({
+            Name: name,
+            Description: description,
+            Website: website,
+        });
+
+        const savedAuthor = await newAuthor.save({ session });
+
+        const title = req.body?.Title;
+        const isbn_code = req.body?.Isbn;
+        const bookDescription = req.body?.BookDescription;
+        const genre = req.body?.Genre;
+        const price = req.body?.Price;
+
+        const newBook = new Book({
+            Title: title,
+            Isbn_code: isbn_code,
+            Description: bookDescription,
+            Genre: genre,
+            Price: price,
+            Author: savedAuthor._id,
+        });
+
+        const savedBook = await newBook.save({ session });
+
+        // Update the Author document with the Book reference
+        savedAuthor.Books.push(savedBook._id);
+        await savedAuthor.save({ session });
+
+        await session.commitTransaction();
+        session.endSession();
+
+        res.status(200).json({ message: 'Author and Book created successfully', author: savedAuthor, book: savedBook });
+    } catch (error) {
+        await session.abortTransaction();
+        session.endSession();
+        next(error);
+    }
+};
+
 exports.getAll = async (req, res, next) => {
     try {
         const allBooks = await Book.find();
@@ -45,7 +95,7 @@ exports.getSpecificBook = async (req, res, next) => {
     try {
         const BookId = req.params.id;
 
-        // Find the author by ID
+        // Find Book by ID
         const book = await Book.findById(BookId);
 
         if (!book) {

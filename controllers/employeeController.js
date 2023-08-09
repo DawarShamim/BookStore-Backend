@@ -1,6 +1,5 @@
 const Employee = require("../models/Employee");
 
-
 exports.createNew = async (req, res) => {
     try {
         const firstName = req.body?.Firstname;
@@ -12,7 +11,7 @@ exports.createNew = async (req, res) => {
         const hireDate = req.body?.Hiredate;
         const employeeNumber = req.body?.Employeenumber;
 
-        const newEmployee = new Employee = {
+        const newEmployee = new Employee ({
             FirstName: firstName,
             LastName: lastName,
             BirthDate: birthDate,
@@ -21,7 +20,7 @@ exports.createNew = async (req, res) => {
             Email: email,
             HireDate: hireDate,
             EmployeeNumber: employeeNumber
-        };
+        });
         await newEmployee.save();
         return res.status(200).json({ message: "Employee Created", Employee, newEmployee });
     }
@@ -51,6 +50,7 @@ exports.getSpecficEmployee = async (req, res, next) => {
         next(error);
     }
 };
+
 exports.updateEmployee = async (req, res, next) => {
     try {
         const EmpID = req.params.id;
