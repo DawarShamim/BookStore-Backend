@@ -26,6 +26,18 @@ const storeSchema = new mongoose.Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Employee'
     }],
+  Books: [
+    {
+      book: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Book'
+      },
+      numberOfCopies: {
+        type: Number,
+        default: 1 // Default number of copies if not provided
+      }
+    }
+  ],
   createdAt: {
     type: Date,
     default: Date.now

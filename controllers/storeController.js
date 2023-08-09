@@ -1,5 +1,6 @@
 const Store = require("../models/Store");
 const Employee = require("../models/Employee");
+const BookSale = require("../models/BookSales");
 
 exports.createNew = async (req, res) => {
     try {
@@ -84,20 +85,27 @@ exports.getSpecificStore = async (req, res) => {
 
 exports.getAllStoreBooks = async (req, res, next) => {
     try {
-        const StoreID = req.params.id;
-
-        // Find the book by ID 
-        const StoreInfo = await Store.find(StoreID);
-
-        if (!StoreInfo) {
-            return res.status(404).json({ message: 'Stores not found' });
-        }
-        res.status(200).json(StoreInfo);
-
+      const storeID = req.params.id;
+  
+      // Find the store by ID
+      const storeInfo = await Store.findById(storeID);
+  
+      if (!storeInfo) {
+        return res.status(404).json({ message: 'Store not found' });
+      }
+  
+      const storeBooks = storeInfo.Books; // Assuming 'Books' is a field in the store document
+  
+      // Find all books with IDs present in the storeBooks array
+      const allBooks = await Books.find({ _id: { $in: storeBooks } });
+  
+      res.status(200).json(allBooks);
     } catch (error) {
-        next(error);
+      next(error);
     }
-};
+  };
+  
+  
 
 exports.getAllStoreEmp = async (req, res, next) => {
     try {
@@ -115,7 +123,6 @@ exports.getAllStoreEmp = async (req, res, next) => {
         next(error);
     }
 };
-const BookSale = require("../models/BookSales");
 
 exports.getAllSales = async (req, res, next) => {
     try {
