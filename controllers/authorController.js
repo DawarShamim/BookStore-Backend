@@ -14,13 +14,9 @@ exports.createNew = async (req, res, next) => {
         });
 
         await newAuthor.save(); // Save the new author to the database
-        // Send a response to the client indicating success
         res.status(200).json({ message: 'Author created successfully', author: newAuthor });
     } catch (error) {
         next(error);
-        // Handle any errors that occurred during the process
-        //   console.error('Error creating author:', error);
-        //   res.status(500).json({ message: 'Failed to create author' });
     }
 };
 

@@ -69,7 +69,7 @@ exports.getAll = async (req, res, next) => {
 //Store
 exports.addBooks = async (req, res, next) => {
     try {
-        const storeId = req.params.storeId; // Assuming you're passing the store ID in the URL parameter
+        const storeId = req.params.storeId; 
         // Retrieve the store by ID
         const store = await Store.findById(storeId);
 
@@ -77,7 +77,7 @@ exports.addBooks = async (req, res, next) => {
             return res.status(404).json({ message: 'Store not found' });
         }
         const BookID = req.body?.bookID;
-        const numberOfCopies = req.body?.NumberOfCopies; // Get the number of copies from the request
+        const numberOfCopies = req.body?.NumberOfCopies; 
 
         // Add the new book to the store's Books array along with the number of copies
         store.Books.push({

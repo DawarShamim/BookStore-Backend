@@ -1,7 +1,7 @@
 const BookSale = require("../models/BookSales");
 const Book = require("../models/Book");
 const Employee = require("../models/Employee");
-const Store = require('../models/Store'); // Import the Store model
+const Store = require('../models/Store'); 
 
 
 exports.createNew = async (req, res, next) => {
@@ -9,7 +9,7 @@ exports.createNew = async (req, res, next) => {
     session.startTransaction();
 
     try {
-        const employeeId = req.user.id; // Assuming you have user authentication middleware that provides user information
+        const employeeId = req.user.id; 
         const employee = await Employee.findById(employeeId);
 
         if (!employee) {
@@ -31,7 +31,6 @@ exports.createNew = async (req, res, next) => {
 
         await newBookSale.save({ session });
 
-        // Subtract sold books from the Store document
         const store = await Store.findById(storeId).session(session);
 
         booksArray.forEach(bookId => {

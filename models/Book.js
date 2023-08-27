@@ -22,6 +22,10 @@ const bookSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  Image: {
+    data: Buffer, // Store image data as Buffer
+    contentType: String, // Store content type (e.g., image/jpeg)
+  },
   createdAt: {
     type: Date,
     default: Date.now

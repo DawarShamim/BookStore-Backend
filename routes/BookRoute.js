@@ -1,10 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const BookController = require('../controllers/bookController');
+const multer = require('multer');
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
  
 router.get('/',BookController.getAll);
-router.post("/",BookController.createNewBookWithAuthor);
+router.post("/",upload.single('Image'),BookController.createNewBookWithAuthor);
 router.post('/book',BookController.createNew); 
 
 router.get('/:id',BookController.getSpecificBook);

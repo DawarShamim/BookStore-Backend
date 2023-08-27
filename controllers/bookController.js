@@ -57,6 +57,9 @@ exports.createNewBookWithAuthor = async (req, res, next) => {
             Genre: genre,
             Price: price,
             Author: savedAuthor._id,
+            Image: {
+                data: req.file.buffer, // Get image data from multer
+                contentType: req.file.mimetype}
         });
 
         const savedBook = await newBook.save({ session });
@@ -68,7 +71,7 @@ exports.createNewBookWithAuthor = async (req, res, next) => {
         await session.commitTransaction();
         session.endSession();
 
-        res.status(200).json({ message: 'Author and Book created successfully', author: savedAuthor, book: savedBook });
+        res.status(200).json({ message: 'Author and Book created successfully', author: savedAuthor });
     } catch (error) {
         await session.abortTransaction();
         session.endSession();
@@ -178,17 +181,13 @@ exports.getReviewofBook = async (req, res, next) => {
         if (!book) {
             return res.status(404).json({ message: 'Book not found' });
         }
-
         // Retrieve the review IDs from the book document
-        const reviewIds = book.Review; // Assuming you have a 'Reviews' field in the Book schema
-
+        const reviewIds = book.Review; 
         // Find the reviews by IDs in the BookReview collection
         const bookReviews = await ClientReview.find({ _id: { $in: reviewIds } });
-
         if (!bookReviews || bookReviews.length === 0) {
             return res.status(404).json({ message: 'No reviews found for this book' });
         }
-
         res.status(200).json(bookReviews);
     } catch (error) {
         next(error);
