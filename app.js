@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const { success, error } = require("consola");
 const cors = require("cors");
 require("dotenv").config();
+const path =require("path");
 
 const app = express();
 // const passport = require("passport");
@@ -23,6 +24,8 @@ app.use("/api/clients", require("./routes/ClientRoute"));
 app.use("/api/clientreviews", require("./routes/ClientReviewsRoute"));
 app.use("/api/employee", require("./routes/EmployeeRoute"));
 app.use("/api/stores", require("./routes/StoreRoute"));
+app.use('/public/', express.static(path.join(__dirname, 'public')));
+
 
 // Custom error handling middleware
 app.use((error, req, res, next) => {
@@ -36,8 +39,7 @@ app.use((error, req, res, next) => {
   res.status(statusCode).json({ error: errorMessage });
 });
 
-
-// This will fire whenever an unknown endpoint is hit
+//For Unknown Endpoints
 app.all("*", (req, res) => {
   res.status(404).json({ error: "404 Not Found" });
 });

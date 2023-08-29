@@ -3,7 +3,8 @@ const ClientReview = require("../models/ClientReviews");
 exports.createNew = async (req, res) => {
     try {
         const book = req.body?.BookId;
-        const client = req.body?.ClientId;
+        // const client = req.body?.ClientId;
+        const client = req.user.id;
         const reviewText = req.body?.Reviewtext;
         const stars = req.body?.Stars;
         const newClientReview = new ClientReview({

@@ -2,6 +2,9 @@ const Book = require("../models/Book");
 const AuthorModel = require("../models/Author");
 const ClientReview = require("../models/ClientReviews");
 const mongoose = require('mongoose');
+const path = require('path'); 
+const fs = require('fs'); 
+
 
 exports.createNew = async (req, res) => {
     try {
@@ -30,7 +33,6 @@ exports.createNew = async (req, res) => {
 exports.createNewBookWithAuthor = async (req, res, next) => {
     const session = await mongoose.startSession();
     session.startTransaction();
-
     try {
         const name = req.body?.Name;
         const description = req.body?.Description;
@@ -57,9 +59,7 @@ exports.createNewBookWithAuthor = async (req, res, next) => {
             Genre: genre,
             Price: price,
             Author: savedAuthor._id,
-            Image: {
-                data: req.file.buffer, // Get image data from multer
-                contentType: req.file.mimetype}
+            ImageUrl: `/public/images/${req.file.filename}`
         });
 
         const savedBook = await newBook.save({ session });
@@ -68,10 +68,25 @@ exports.createNewBookWithAuthor = async (req, res, next) => {
         savedAuthor.Books.push(savedBook._id);
         await savedAuthor.save({ session });
 
+        // Move the uploaded file to the server's public/images folder
+        // const imagePath = path.resolve(__dirname, '..', 'public', 'images', req.file.filename);
+        // // console.log("imagePath:", imagePath);
+        // console.log("req.file:",req.file.buffer);
+
+        // await fs.writeFile(imagePath, req.file.buffer, (error) => {
+        //     if (error) {
+        //       console.error("Error writing file:", error);
+        //       // Handle the error appropriately
+        //     } else {
+        //       console.log("File written successfully");
+        //       // Continue with the rest of your logic
+        //     }
+        //   });
+
         await session.commitTransaction();
         session.endSession();
 
-        res.status(200).json({ message: 'Author and Book created successfully', author: savedAuthor });
+        res.status(200).json({ message: 'Author and Book created successfully', author: savedAuthor, User: savedBook });
     } catch (error) {
         await session.abortTransaction();
         session.endSession();
@@ -182,7 +197,7 @@ exports.getReviewofBook = async (req, res, next) => {
             return res.status(404).json({ message: 'Book not found' });
         }
         // Retrieve the review IDs from the book document
-        const reviewIds = book.Review; 
+        const reviewIds = book.Review;
         // Find the reviews by IDs in the BookReview collection
         const bookReviews = await ClientReview.find({ _id: { $in: reviewIds } });
         if (!bookReviews || bookReviews.length === 0) {
