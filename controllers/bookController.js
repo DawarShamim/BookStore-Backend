@@ -2,8 +2,8 @@ const Book = require("../models/Book");
 const AuthorModel = require("../models/Author");
 const ClientReview = require("../models/ClientReviews");
 const mongoose = require('mongoose');
-const path = require('path'); 
-const fs = require('fs'); 
+const path = require('path');
+const fs = require('fs');
 
 
 exports.createNew = async (req, res) => {
@@ -33,18 +33,25 @@ exports.createNew = async (req, res) => {
 exports.createNewBookWithAuthor = async (req, res, next) => {
     const session = await mongoose.startSession();
     session.startTransaction();
+
     try {
         const name = req.body?.Name;
         const description = req.body?.Description;
         const website = req.body?.Website;
 
-        const newAuthor = new AuthorModel({
-            Name: name,
-            Description: description,
-            Website: website,
-        });
+        // Check if the author already exists based on name and description
+        let existingAuthor = await AuthorModel.findOne({ Name: name, Description: description });
 
-        const savedAuthor = await newAuthor.save({ session });
+        if (!existingAuthor) {
+            // Create a new author if not already present
+            const newAuthor = new AuthorModel({
+                Name: name,
+                Description: description,
+                Website: website,
+            });
+
+            existingAuthor = await newAuthor.save({ session });
+        }
 
         const title = req.body?.Title;
         const isbn_code = req.body?.Isbn;
@@ -52,41 +59,36 @@ exports.createNewBookWithAuthor = async (req, res, next) => {
         const genre = req.body?.Genre;
         const price = req.body?.Price;
 
-        const newBook = new Book({
-            Title: title,
-            Isbn_code: isbn_code,
-            Description: bookDescription,
-            Genre: genre,
-            Price: price,
-            Author: savedAuthor._id,
-            ImageUrl: `/public/images/${req.file.filename}`
-        });
+        // Check if the book already exists based on title and ISBN
+        let existingBook = await Book.findOne({ Title: title, Isbn_code: isbn_code });
 
-        const savedBook = await newBook.save({ session });
+        if (!existingBook) {
+            // Create a new book if not already present
+            const newBook = new Book({
+                Title: title,
+                Isbn_code: isbn_code,
+                Description: bookDescription,
+                Genre: genre,
+                Price: price,
+                Author: existingAuthor._id,
+                ImageUrl: `/public/images/${req.file.filename}`
+            });
 
-        // Update the Author document with the Book reference
-        savedAuthor.Books.push(savedBook._id);
-        await savedAuthor.save({ session });
+            existingBook = await newBook.save({ session });
 
-        // Move the uploaded file to the server's public/images folder
-        // const imagePath = path.resolve(__dirname, '..', 'public', 'images', req.file.filename);
-        // // console.log("imagePath:", imagePath);
-        // console.log("req.file:",req.file.buffer);
-
-        // await fs.writeFile(imagePath, req.file.buffer, (error) => {
-        //     if (error) {
-        //       console.error("Error writing file:", error);
-        //       // Handle the error appropriately
-        //     } else {
-        //       console.log("File written successfully");
-        //       // Continue with the rest of your logic
-        //     }
-        //   });
+            // Update the Author document with the Book reference
+            existingAuthor.Books.push(existingBook._id);
+            await existingAuthor.save({ session });
+        }
 
         await session.commitTransaction();
         session.endSession();
 
-        res.status(200).json({ message: 'Author and Book created successfully', author: savedAuthor, User: savedBook });
+        if (existingBook) {
+            res.status(200).json({ message: 'Book is already updated in inventory', book: existingBook });
+        } else {
+            res.status(200).json({ message: 'Author and Book created successfully', author: existingAuthor, book: existingBook });
+        }
     } catch (error) {
         await session.abortTransaction();
         session.endSession();
@@ -94,14 +96,31 @@ exports.createNewBookWithAuthor = async (req, res, next) => {
     }
 };
 
+
 exports.getAll = async (req, res, next) => {
     try {
-        const allBooks = await Book.find();
+        const query = req.query;
 
-        if (allBooks.length > 0) {
-            res.status(200).json({ books: allBooks });
+        if (Object.keys(query).length > 0) {
+            // Handle query parameters
+            // For example, if you want to filter books by genre
+            const genre = query.genre;
+            const filteredBooks = await Book.find({ Genre: genre });
+
+            if (filteredBooks.length > 0) {
+                res.status(200).json({ books: filteredBooks });
+            } else {
+                res.status(404).json({ message: 'No books found.' });
+            }
         } else {
-            res.status(404).json({ message: 'No books found.' });
+            // Get all books if no query parameters are provided
+            const allBooks = await Book.find();
+
+            if (allBooks.length > 0) {
+                res.status(200).json({ books: allBooks });
+            } else {
+                res.status(404).json({ message: 'No books found.' });
+            }
         }
     } catch (error) {
         next(error);
@@ -121,6 +140,29 @@ exports.getSpecificBook = async (req, res, next) => {
         }
 
         res.status(200).json(book);
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.SearchBook = async (req, res, next) => {
+    try {
+        const query = req.query;
+
+        const capitalizedQuery = {};
+
+        for (const key in query) {
+            const capitalizedKey = key.charAt(0).toUpperCase() + key.slice(1);
+            capitalizedQuery[capitalizedKey] = new RegExp(query[key], 'i');
+        }
+
+        const Books = await Book.find(capitalizedQuery);
+
+        if (Books.length > 0) {
+            return res.status(200).json({ FilteredBooks: Books });
+        } else {
+            return res.status(404).json({ message: 'Book not found' });
+        }
     } catch (error) {
         next(error);
     }

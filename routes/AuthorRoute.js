@@ -5,6 +5,7 @@ const AuthorController = require('../controllers/authorController');
 
 router.post('/',AuthorController.createNew); 
 router.get('/',AuthorController.getAll);
+router.get('/search-author',AuthorController.SearchAuthor);
 
 router.put('/:id',AuthorController.updateAuthor);
 

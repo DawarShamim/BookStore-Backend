@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const { success, error } = require("consola");
 const cors = require("cors");
 require("dotenv").config();
-const path =require("path");
+const path = require("path");
 
 const app = express();
 // const passport = require("passport");
@@ -25,6 +25,7 @@ app.use("/api/clientreviews", require("./routes/ClientReviewsRoute"));
 app.use("/api/employee", require("./routes/EmployeeRoute"));
 app.use("/api/stores", require("./routes/StoreRoute"));
 app.use('/public/', express.static(path.join(__dirname, 'public')));
+app.use('/search-api',require("./routes/PublicRoute"));
 
 
 // Custom error handling middleware
@@ -48,9 +49,7 @@ startApp = async () => {
   try {
     mongoose.set("strictQuery", false);
     await mongoose.connect(DBurl);
-
     console.log("Connected to the database successfully");
-
     app.listen(PORT, () => {
       console.log("Server started on port", PORT);
     });

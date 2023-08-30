@@ -67,6 +67,30 @@ exports.updateAuthor = async (req, res, next) => {
     }
 };
 
+exports.SearchAuthor = async (req, res, next) => {
+    try {
+        const query = req.query;
+
+        const capitalizedQuery = {};
+
+        for (const key in query) {
+            const capitalizedKey = key.charAt(0).toUpperCase() + key.slice(1);
+            capitalizedQuery[capitalizedKey] = new RegExp(query[key], 'i');
+        }
+
+        const Authors = await Author.find(capitalizedQuery);
+
+        if (Authors.length > 0) {
+            return res.status(200).json({ FilteredAuthors: Authors });
+        } else {
+            return res.status(404).json({ message: 'Author not found' });
+        }
+    } catch (error) {
+        next(error);
+    }
+};
+
+
 exports.getSpecificAuthor = async (req, res, next) => {
     try {
         const authorID = req.params.id;
