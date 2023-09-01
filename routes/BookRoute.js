@@ -3,6 +3,8 @@ const router = express.Router();
 const BookController = require('../controllers/bookController');
 const upload = require('../Utils/MulterConfig');
 
+// /api/book
+
 router.get('/',BookController.getAll);
 router.post("/",upload.single('Image'),BookController.createNewBookWithAuthor);
 router.get("/search-book",BookController.SearchBook);

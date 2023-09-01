@@ -3,7 +3,7 @@ const router = express.Router();
 
 const ClientController = require('../controllers/clientController');
 
-
+// /api/client
 router.get('/',ClientController.getAll);
 router.post('/',ClientController.createNew);
 

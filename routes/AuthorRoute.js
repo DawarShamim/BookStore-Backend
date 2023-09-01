@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
-
 const AuthorController = require('../controllers/authorController');
+// /api/author
+
 
 router.post('/',AuthorController.createNew); 
 router.get('/',AuthorController.getAll);

@@ -3,8 +3,8 @@ const router = express.Router();
 
 const EmployeeController = require('../controllers/employeeController');
 
+// /api/employee
 
- 
 router.get('/',EmployeeController.getAll);
 router.post('/',EmployeeController.createNew); 
 router.get('/:id',EmployeeController.getSpecficEmployee);

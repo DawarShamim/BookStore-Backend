@@ -3,6 +3,7 @@ const router = express.Router();
 
 const BookSaleController = require('../controllers/booksaleController');
 
+// /api/booksales
 
  
 router.get('/',BookSaleController.getAll);

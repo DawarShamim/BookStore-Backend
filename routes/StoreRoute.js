@@ -3,6 +3,8 @@ const router = express.Router();
 
 const StoreController = require('../controllers/storeController');
 
+
+// /api/stores
  
 router.get('/',StoreController.getAll);
 router.post('/',StoreController.createNew); 

@@ -4,6 +4,7 @@ const { success, error } = require("consola");
 const cors = require("cors");
 require("dotenv").config();
 const path = require("path");
+const HttpError = require("http-errors");
 
 const app = express();
 // const passport = require("passport");
@@ -20,10 +21,11 @@ app.use(cors());
 app.use("/api/author", require("./routes/AuthorRoute"));
 app.use("/api/book", require("./routes/BookRoute"));
 app.use("/api/booksales", require("./routes/BookSalesRoute"));
-app.use("/api/clients", require("./routes/ClientRoute"));
-app.use("/api/clientreviews", require("./routes/ClientReviewsRoute"));
+app.use("/api/client", require("./routes/ClientRoute"));
+app.use("/api/reviews", require("./routes/ClientReviewsRoute"));
 app.use("/api/employee", require("./routes/EmployeeRoute"));
 app.use("/api/stores", require("./routes/StoreRoute"));
+
 app.use('/public/', express.static(path.join(__dirname, 'public')));
 app.use('/search-api',require("./routes/PublicRoute"));
 

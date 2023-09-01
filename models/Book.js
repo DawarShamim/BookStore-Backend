@@ -18,6 +18,11 @@ const bookSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  Rating: {
+    type: Number,
+    required: true,
+    default: 0
+  },
   Price: {
     type: Number,
     required: true

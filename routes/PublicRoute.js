@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
-
 const Book = require("../models/Book");
 const Author = require("../models/Author");
+
+//search-api
 
 router.get('/public-search/:searchText',
     async (req, res, next) => {
@@ -31,15 +32,7 @@ router.get('/public-search/:searchText',
 router.get('/swiper',
     async (req, res, next) => {
         try {
-            const searchText = req.params.searchText;
-            console.log("Search Text", searchText);
-
-            // Create a case-insensitive regular expression for partial matching
-            const searchRegex = new RegExp(searchText, 'i');
-            console.log(searchRegex);
-
-            // Search for books with a partial match in the title
-            const Books = await Book.find({ Title: searchRegex }).limit(20);
+            const Books = await Book.find().sort({ Rating: -1 }).limit(20);
 
             if (Books.length > 0) {
                 return res.status(200).json({ SwiperBooks: Books });
