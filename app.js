@@ -4,7 +4,7 @@ const { success, error } = require("consola");
 const cors = require("cors");
 require("dotenv").config();
 const path = require("path");
-const HttpError = require("http-errors");
+const {isHttpError} = require("http-errors");
 
 const app = express();
 // const passport = require("passport");
@@ -32,10 +32,11 @@ app.use('/search-api',require("./routes/PublicRoute"));
 
 // Custom error handling middleware
 app.use((error, req, res, next) => {
-  console.error(error);
   let errorMessage = "An unknown error occurred";
   let statusCode = 500;
-  if (error instanceof HttpError) {
+  console.error(error);
+  if (isHttpError(error)) {
+    cosnole.log(error);
     statusCode = error.status;
     errorMessage = error.message;
   }

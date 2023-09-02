@@ -39,6 +39,10 @@ const employeeSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Store'
   },
+  Active:{
+    type:Boolean,
+    default:true
+  },
   createdAt: {
     type: Date,
     default: Date.now

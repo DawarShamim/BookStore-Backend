@@ -56,20 +56,10 @@ exports.updateStore = async (req, res, next) => {
         next(error);
     }
 };
-//Admin
-exports.getAll = async (req, res, next) => {
-    try {
-        const allStores = await Store.find();
-        res.status(200).json(allStores);
-
-    } catch (error) {
-        next(error);
-    }
-};
 //Store
 exports.addBooks = async (req, res, next) => {
     try {
-        const storeId = req.params.storeId; 
+        const storeId = req.params.storeId;
         // Retrieve the store by ID
         const store = await Store.findById(storeId);
 
@@ -77,7 +67,7 @@ exports.addBooks = async (req, res, next) => {
             return res.status(404).json({ message: 'Store not found' });
         }
         const BookID = req.body?.bookID;
-        const numberOfCopies = req.body?.NumberOfCopies; 
+        const numberOfCopies = req.body?.NumberOfCopies;
 
         // Add the new book to the store's Books array along with the number of copies
         store.Books.push({
@@ -93,20 +83,24 @@ exports.addBooks = async (req, res, next) => {
         next(error);
     }
 };
-
 //Admin
-exports.getSpecificStore = async (req, res, next) => {
+exports.getStore = async (req, res, next) => {
     try {
-        const storeID = req.params.id;
-
-        // Find the store by ID
-        const storeInfo = await Store.findById(storeID);
-
-        if (!storeInfo) {
-            return res.status(404).json({ message: 'Store not found' });
+        const StoreId = req.params.id;
+        let Stores;
+        if (StoreId) {
+            Store = await Store.find(StoreId);
+            if (!Store) {
+                return res.status(404).json({ message: "Store Not found" });
+            }
+            Stores = [Store];
+        } else {
+            Stores = await Store.find({});
+            if (Stores.length === 0) {
+                return res.status(404).json({ message: 'No Stores found' });
+            }
         }
-        res.status(200).json(storeInfo);
-
+        res.status(200).json({ Stores: Stores });
     } catch (error) {
         next(error);
     }
@@ -116,16 +110,12 @@ exports.getAllStoreBooks = async (req, res, next) => {
     try {
         const storeID = req.params.id;
 
-        // Find the store by ID
         const storeInfo = await Store.findById(storeID);
-
         if (!storeInfo) {
             return res.status(404).json({ message: 'Store not found' });
         }
-
         const storeBooks = storeInfo.Books;
         res.status(200).json(storeBooks);
-
     } catch (error) {
         next(error);
     }

@@ -5,7 +5,6 @@ const BookSaleController = require('../controllers/booksaleController');
 
 // /api/booksales
 
- 
 router.get('/',BookSaleController.getAll);
 router.post('/',BookSaleController.createNew); 
 

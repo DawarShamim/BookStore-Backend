@@ -59,7 +59,6 @@ exports.createNew = async (req, res, next) => {
     }
 };
 
-
 exports.getAll = async (req, res, next) => {
     try {
         const query = req.query; // Query parameters (if any)

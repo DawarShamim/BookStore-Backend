@@ -1,21 +1,17 @@
-const mongoose = require('mongoose');
 const Employee = require("../models/Employee");
 const User = require("../models/User");
 const Store = require("../models/Store");
-
+const mongoose = require('mongoose');
 
 exports.createNew = async (req, res, next) => {
     const session = await mongoose.startSession();
     session.startTransaction();
-    console.log(req.body?.Username);
 
     try {
-
         const name = req.body?.Name;
         const StoreAddress = req.body?.StoreAddress;
         const state = req.body?.State;
         const phoneNumbers = req.body?.PhoneNumbers;
-
         let existingStore = await Store.findOne({ Name: name, Address: StoreAddress });
         if (!existingStore) {
             const newStore = new Store({
@@ -94,23 +90,23 @@ async function generateEmployeeNumber() {
 }
 
 
-exports.getAll = async (req, res, next) => {
-    try {
-        await Employee.find();
-    } catch (error) {
-        next(error);
-    }
-};
-
-exports.getSpecficEmployee = async (req, res, next) => {
+exports.getEmployees = async (req, res, next) => {
     try {
         const EmpID = req.params.id;
-        const employee = await Employee.find(EmpID);
-        if (!employee) {
-            return res.status(404).json({ message: "No Employee Found" })
+        let employees;
+        if (EmpID) {
+            const employee = await Employee.findById(EmpID);
+            if (!employee) {
+                return res.status(404).json({ message: 'Employee not found' });
+            }
+            employees = [employee];
         } else {
-            return res.status(200).json({ Employee: employee });
+            employees = await Employee.find();
+            if (employees.length === 0) {
+                return res.status(404).json({ message: 'No employees found' });
+            }
         }
+        res.status(200).json({ Employees: employees });
     } catch (error) {
         next(error);
     }
@@ -119,7 +115,6 @@ exports.getSpecficEmployee = async (req, res, next) => {
 exports.updateEmployee = async (req, res, next) => {
     try {
         const EmpID = req.params.id;
-
         const firstName = req.body?.Firstname;
         const lastName = req.body?.Lastname;
         const birthDate = req.body?.Birthdate;
@@ -127,7 +122,6 @@ exports.updateEmployee = async (req, res, next) => {
         const phone = req.body?.Phone;
         const email = req.body?.Email;
         const hireDate = req.body?.Hiredate;
-
         const updateData = {
             FirstName: firstName,
             LastName: lastName,
@@ -154,3 +148,23 @@ exports.updateEmployee = async (req, res, next) => {
     };
 };
 
+
+
+exports.ChangeActiveStatus = async (req, res, next) => {
+    try {
+        const EmpID = req.params.id;
+        // Find the employee by ID
+        const employee = await Employee.findById(EmpID);
+        if (!employee) {
+            return res.status(404).json({ message: 'Employee not found' });
+        }
+        employee.Active = !employee.Active;
+
+        // Save the updated employee
+        const updatedEmployee = await employee.save();
+
+        res.status(200).json(updatedEmployee);
+    } catch (error) {
+        next(error);
+    }
+};

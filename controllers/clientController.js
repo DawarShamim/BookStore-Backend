@@ -1,7 +1,5 @@
 const Client = require("../models/Client");
 const User = require("../models/User");
-
-
 const mongoose = require('mongoose');
 
 exports.createNew = async (req, res, next) => {
@@ -57,9 +55,7 @@ exports.createNew = async (req, res, next) => {
 exports.getAll = async (req, res, next) => {
     try {
         const query = req.query;
-
         let allClients;
-
         if (Object.keys(query).length === 0) {
             // No query parameters, retrieve all clients
             allClients = await Client.find();
@@ -78,16 +74,12 @@ exports.getAll = async (req, res, next) => {
 };
 
 exports.getSpecificClient = async (req, res) => {
-
     try {
         const ClientID = req.params.id;
-        // Find the author by ID
         const client = await Client.findById(ClientID);
-
         if (!client) {
             return res.status(404).json({ message: 'Client not found' });
         }
-
         res.status(200).json(client);
     } catch (error) {
         next(error);
