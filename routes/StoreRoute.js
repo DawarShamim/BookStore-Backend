@@ -5,8 +5,7 @@ const StoreController = require('../controllers/storeController');
 
 
 // /api/stores
- 
-router.post('/',StoreController.createNew); 
+
 router.put('/:id',StoreController.updateStore);
 router.patch('/:id/addbook',StoreController.addBooks);
 

@@ -3,6 +3,21 @@ const User = require("../models/User");
 const Store = require("../models/Store");
 const mongoose = require('mongoose');
 
+async function generateEmployeeNumber() {
+    const lastEmployee = await Employee.findOne({}, {}, { sort: { 'EmployeeNumber': -1 } });
+    if (!lastEmployee) {
+        return 'EMP001'; // If no employees exist yet, start with EMP001
+    }
+
+    // Extract the number part and increment it
+    const lastNumber = parseInt(lastEmployee.EmployeeNumber.slice(3), 10);
+    const newNumber = lastNumber + 1;
+
+    // Pad the new number with leading zeros
+    const paddedNumber = `EMP${newNumber.toString().padStart(3, '0')}`;
+    return paddedNumber;
+};
+
 exports.createNew = async (req, res, next) => {
     const session = await mongoose.startSession();
     session.startTransaction();
@@ -74,23 +89,8 @@ exports.createNew = async (req, res, next) => {
 };
 
 
-async function generateEmployeeNumber() {
-    const lastEmployee = await Employee.findOne({}, {}, { sort: { 'EmployeeNumber': -1 } });
-    if (!lastEmployee) {
-        return 'EMP001'; // If no employees exist yet, start with EMP001
-    }
-
-    // Extract the number part and increment it
-    const lastNumber = parseInt(lastEmployee.EmployeeNumber.slice(3), 10);
-    const newNumber = lastNumber + 1;
-
-    // Pad the new number with leading zeros
-    const paddedNumber = `EMP${newNumber.toString().padStart(3, '0')}`;
-    return paddedNumber;
-}
-
-
 exports.getEmployees = async (req, res, next) => {
+
     try {
         const EmpID = req.params.id;
         let employees;

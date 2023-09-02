@@ -3,27 +3,6 @@ const Employee = require("../models/Employee");
 const BookSale = require("../models/BookSales");
 
 //Admin
-exports.createNew = async (req, res, next) => {
-    try {
-        const name = req.body?.Name;
-        const address = req.body?.Address;
-        const state = req.body?.State;
-        const phoneNumbers = req.body?.PhoneNumbers;
-
-        const newStore = new Store({
-            Name: name,
-            Address: address,
-            State: state,
-            PhoneNumbers: phoneNumbers
-        });
-        await newStore.save();
-
-        res.status(200).json({ message: 'Store created', store: newStore });
-    } catch (error) {
-        next(error);
-    }
-};
-//Admin
 exports.updateStore = async (req, res, next) => {
     try {
         const storeID = req.params.id;

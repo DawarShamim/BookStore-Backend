@@ -24,7 +24,8 @@ const employeeSchema = new mongoose.Schema({
   Email: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
+    lowercase:true
   },
   HireDate: {
     type: String,
