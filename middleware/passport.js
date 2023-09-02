@@ -11,16 +11,22 @@ const options = {
 module.exports = (passport) => {
     passport.use(
         new Strategy(options, async (payload, done) => {
-            await User.findById(payload.user_id)
-                .then((user) => {
-                    if (user) {
-                        return done(null, user);
+            try {
+                const user = await User.findById(payload.user_id);
+
+                if (!user) {
+                    return done(null, false);
+                }
+                if (user.Role === 'Employee') {
+                    const employee = await Employee.findById(payload.user_id);
+                    if (!employee || !employee.Active) {
+                        return done(null, false);
                     }
-                    return done(null, false);
-                })
-                .catch((err) => {
-                    return done(null, false);
-                });
+                }
+                return done(null, user);
+            } catch (err) {
+                return done(err, false);
+            }
         })
     );
-};
+};    
