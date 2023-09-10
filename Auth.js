@@ -34,32 +34,20 @@ const login = async (req, res) => {
     }
 };
 
+
 const Authentication = passport.authenticate("jwt", { session: false });
 
-function AuthenticateUser(req, res, next) {
+const RoleCheck = (roles) => (req, res, next) => {
+    if (roles.includes(req.user.Role)) {
+        return next();
+    } else {
 
-    const header = req.headers.authorization;
-    const token = header.replace("Bearer ", "");
-    if (!token) {
-        return res.status(401).json({ message: 'Unauthorized' });
+        return res.status(403).json({message:"Forbidden"}); // Forbidden
     }
-
-    try {
-        // Verify the token and extract user information
-        const Validity = jwt.verify(token, "Route-Token");
-        if (Validity) {
-            const decodedToken = jwt.decode(token);
-            req.user = decodedToken.user_id;
-            next();
-        }
-    } catch (err) {
-        return res.status(401).json({ message: 'Invalid token' });
-    }
-}
-
+};
 
 module.exports = {
     Authentication,
     login,
-    AuthenticateUser
+    RoleCheck
 };
