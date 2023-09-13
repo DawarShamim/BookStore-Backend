@@ -17,7 +17,7 @@ app.use(express.json());
 app.use(cors());
 
 require("./middleware/passport")(passport);
-require("./middleware/cache");
+require("./services/cache");
 
 app.use("/login",login);
 app.use("/api/author", require("./routes/AuthorRoute"));
@@ -30,7 +30,7 @@ app.use("/api/stores", require("./routes/StoreRoute"));
 app.use("/api/user",Authentication,require("./routes/UserController"));
 
 app.use('/public/', express.static(path.join(__dirname, 'public')));
-app.use('/search-api',require("./routes/PublicRoute"));
+app.use('/public-api',require("./routes/PublicRoute"));
 
 
 // Custom error handling middleware

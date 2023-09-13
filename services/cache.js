@@ -1,51 +1,68 @@
 const mongoose = require('mongoose');
 const redis = require('redis');
-const util = require('util');
 
-const redisUrl = 'redis://127.0.0.1:6379';
+const redisUrl = 'http://127.0.0.1:6379';
 const client = redis.createClient(redisUrl);
-client.hGet = util.promisify(client.hGet);
+
+
+(async () => {
+  await client.connect();
+})();
+client.on('connect', () => console.log('Redis Client Connected'));
+client.on('error', (err) => console.log('Redis Client Connection Error', err));
+// client.hGet = util.promisify(client.hGet);
 
 const exec = mongoose.Query.prototype.exec;
 
 mongoose.Query.prototype.cache = function (options = {}) {
-    this.useCache = true;
-    this.hashKey = JSON.stringify(options.key || 'default');
-    return this;
+  this.useCache = true;
+  this.hashKey = JSON.stringify(options.key || 'default');
+  return this;
 };
 
 // apply this on query for caching
 // .cache({key:req.user.id});
 
 mongoose.Query.prototype.exec = async function () {
+  if (!this.useCache) {
+    return exec.apply(this, arguments);
+  }
 
-    if (!this.useCache) {
-        return exec.apply(this, arguments);
-    };
-
+  try {
     const key = JSON.stringify(Object.assign({}, this.getQuery(), {
-        collection: this.mongooseCollection.name
+      collection: this.mongooseCollection.name
     }));
-    // see if any value exist in redis for key
-    const cacheValue = await client.hGet(this.hashKey, key)
 
-    // if true ,return that
+
+    // Check if the value exists in Redis
+    const cacheValue = await client.hGet(this.hashKey, key);
+
     if (cacheValue) {
-        // const doc = new this.model(Json.parse(cach eValue));
-        const doc = JSON.parse(cacheValue);
-        return Array.isArray(doc)
-            ? doc.map(d => new this.model(d))
-            : new this.model(doc);
+      // Parse the cached value
+      const doc = JSON.parse(cacheValue);
+
+      // Return the cached value
+      return Array.isArray(doc)
+        ? doc.map(d => new this.model(d))
+        : new this.model(doc);
     }
-    // else issue the query and store the result in redis
+    //Execute the query 
     const result = await exec.apply(this, arguments);
-    client.hSet(this.hashKey, key, JSON.stringify(result), 'EX', 1000);
+
+    // Setting the result in redis with expiration time of 600 seconds (10 minutes)
+    client.hSet(this.hashKey, key, JSON.stringify(result), 'EX', 600);
+
     return result;
+  } catch (err) {
+    // Handle any errors that occur during execution or Redis operations
+    console.error("Error:", err);
+    throw err; // Rethrow the error to be handled higher up
+  }
 };
 
 module.exports = {
-    clearHash(hashKey) {
-        client.del(JSON.stringify(hashKey))
+  clearHash(hashKey) {
+    client.del(JSON.stringify(hashKey))
 
-    }
+  }
 };
