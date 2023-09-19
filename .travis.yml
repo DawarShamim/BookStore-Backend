@@ -1,0 +1,8 @@
+language: node_js
+node_js:
+  - 14
+
+# Specify the script to run for testing
+script:
+  - npm install       # Install project dependencies
+  - npm test   
